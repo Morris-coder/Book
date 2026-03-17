@@ -1,1 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luna & Milo: Kindness Rainbow | Official Interactive Book</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; scroll-behavior: smooth; }
+        .rainbow-gradient { background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1, #ff9ff3); }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .book-shadow { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        #paymentModal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 100; align-items: center; justify-content: center; }
+        .page-transition { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="antialiased text-slate-900">
 
+    <div id="paymentModal">
+        <div class="bg-white rounded-[2.5rem] p-10 max-w-md w-full mx-4 shadow-2xl text-center relative">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+            <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-12">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+            <h3 class="text-2xl font-extrabold mb-3">Get the PDF Edition</h3>
+            <p class="text-slate-500 mb-8 leading-relaxed">Secure your high-resolution digital copy of the 75-page Kindness Rainbow adventure.</p>
+            <div class="space-y-4">
+                <button onclick="handleSuccess()" class="w-full py-4 bg-[#635bff] text-white rounded-2xl font-bold hover:scale-[1.02] transition-transform">Pay with Stripe</button>
+                <button onclick="handleSuccess()" class="w-full py-4 bg-[#ffc439] text-black rounded-2xl font-bold hover:scale-[1.02] transition-transform">Pay with PayPal</button>
+            </div>
+            <p class="mt-6 text-[10px] text-slate-400 font-bold uppercase tracking-widest">Encrypted & Secure Transaction</p>
+        </div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-50 glass-nav h-20 flex items-center justify-between px-6 lg:px-12">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rainbow-gradient rounded-xl shadow-lg"></div>
+            <span class="text-xl font-extrabold tracking-tighter">LUNA<span class="text-blue-500">&</span>MILO</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="#preview" class="hidden md:block font-bold text-slate-500 hover:text-blue-600 transition-colors">Look Inside</a>
+            <button onclick="openModal()" class="bg-slate-900 text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-blue-600 transition-all shadow-lg shadow-slate-200">Download PDF</button>
+        </div>
+    </nav>
+
+    <header class="pt-40 pb-20 px-6 text-center max-w-5xl mx-auto">
+        <div class="inline-block mb-6 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 font-bold text-xs uppercase tracking-widest border border-blue-100">
+            Ages 4-8 • 75 Interactive Pages
+        </div>
+        <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 mb-8 leading-[1.1]">
+            Kindness is the <br><span class="text-transparent bg-clip-text rainbow-gradient">Ultimate Superpower</span>
+        </h1>
+        <p class="text-lg md:text-xl text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed">
+            Join Luna and Milo on a beautifully illustrated journey through the Rainbow Meadow, teaching empathy, sharing, and friendship.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <button onclick="openModal()" class="px-10 py-5 bg-blue-600 text-white rounded-full font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200">Start Your Adventure</button>
+            <a href="#preview" class="px-10 py-5 bg-white text-slate-600 rounded-full font-bold text-lg hover:bg-slate-50 border border-slate-200 transition-all">Free Preview</a>
+        </div>
+    </header>
+
+    <section id="preview" class="max-w-6xl mx-auto px-6 mb-32">
+        <div class="bg-white rounded-[3rem] p-4 md:p-12 border border-slate-100 shadow-2xl relative overflow-hidden">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-extrabold mb-2">Interactive Story Reader</h2>
+                <p class="text-slate-400 font-medium">Click the arrows to flip through the pages</p>
+            </div>
+
+            <div class="relative group">
+                <div class="aspect-[4/3] bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden border border-slate-100">
+                    <div id="loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/80 backdrop-blur-sm z-20">
+                        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <p class="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Turning Page...</p>
+                    </div>
+                    <img id="pageImg" src="" alt="Book Content" class="page-transition opacity-0 max-h-full max-w-full rounded-sm book-shadow">
+                </div>
+
+                <div class="flex justify-between items-center mt-10 max-w-md mx-auto">
+                    <button onclick="nav(-1)" class="w-16 h-16 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-blue-600 transition-all shadow-xl active:scale-90">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    
+                    <div class="text-center">
+                        <div class="text-3xl font-black text-slate-900" id="pageNum">01</div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">of 75 Pages</div>
+                    </div>
+
+                    <button onclick="nav(1)" class="w-16 h-16 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-blue-600 transition-all shadow-xl active:scale-90">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-32">
+        <div class="space-y-8">
+            <h2 class="text-4xl font-extrabold leading-tight">Beyond the Story: <br><span class="text-blue-600">Cognitive Growth</span></h2>
+            <p class="text-lg text-slate-600">The Kindness Rainbow isn't just a book; it's a curriculum-aligned tool for social-emotional learning (SEL).</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-6 bg-pink-50 rounded-3xl border border-pink-100">
+                    <div class="text-3xl mb-3">❤️</div>
+                    <div class="font-bold text-pink-900">Empathy</div>
+                    <p class="text-xs text-pink-700 mt-1">Recognizing feelings in others.</p>
+                </div>
+                <div class="p-6 bg-emerald-50 rounded-3xl border border-emerald-100">
+                    <div class="text-3xl mb-3">🤝</div>
+                    <div class="font-bold text-emerald-900">Cooperation</div>
+                    <p class="text-xs text-emerald-700 mt-1">Learning the value of sharing.</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm">
+            <h3 class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-10">Story Theme Distribution</h3>
+            <div class="relative h-64">
+                <canvas id="themeChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 py-20 px-6 text-white text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-2xl font-black mb-4">LUNA<span class="text-blue-400">&</span>MILO</div>
+            <p class="text-slate-500 text-sm mb-8">Developed by Morris Lokosang • Certified AI Specialist Project</p>
+            <div class="flex justify-center gap-6">
+                <a href="#" class="text-slate-400 hover:text-white transition-colors underline text-sm">Terms</a>
+                <a href="#" class="text-slate-400 hover:text-white transition-colors underline text-sm">Privacy</a>
+                <a href="mailto:info@karedigitallanguage.com" class="text-slate-400 hover:text-white transition-colors underline text-sm">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Asset Configuration
+        const assets = ["Luna & Milo's Kindness Rainbow_Page_00 Front Cover.jpg"];
+        for(let i=1; i<=72; i++) {
+            assets.push(`Luna & Milo's Kindness Rainbow_Page_${String(i).padStart(2, '0')}.jpg`);
+        }
+        assets.push("Luna & Milo's Kindness Rainbow_Page_73 Back Cover.jpg");
+
+        let current = 0;
+        const pageImg = document.getElementById('pageImg');
+        const loader = document.getElementById('loader');
+        const pageNumDisplay = document.getElementById('pageNum');
+        const modal = document.getElementById('paymentModal');
+
+        // 2. Navigation Logic
+        function nav(dir) {
+            const next = current + dir;
+            if (next >= 0 && next < assets.length) {
+                current = next;
+                updateView();
+            }
+        }
+
+        function updateView() {
+            pageImg.style.opacity = '0';
+            loader.style.display = 'flex';
+            
+            pageImg.src = assets[current];
+            pageImg.onload = () => {
+                loader.style.display = 'none';
+                pageImg.style.opacity = '1';
+                pageNumDisplay.innerText = String(current + 1).padStart(2, '0');
+            };
+        }
+
+        // 3. Payment/Download Logic
+        function openModal() { modal.style.display = 'flex'; }
+        function closeModal() { modal.style.display = 'none'; }
+
+        function handleSuccess() {
+            closeModal();
+            // This filename must match exactly what you upload to GitHub
+            const pdfUrl = 'Luna_Milo_Kindness_Rainbow.pdf';
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = 'Luna_Milo_Kindness_Rainbow.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alert("Payment successful! Your high-resolution PDF download is starting.");
+        }
+
+        // 4. Data Visualization
+        window.onload = () => {
+            updateView();
+            const ctx = document.getElementById('themeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Empathy', 'Sharing', 'Nature', 'Friendship'],
+                    datasets: [{
+                        data: [40, 25, 20, 15],
+                        backgroundColor: ['#ff6b6b', '#feca57', '#1dd1a1', '#48dbfb'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { font: { weight: 'bold' }, padding: 20 } } }
+                }
+            });
+        };
+
+        // Close modal on outside click
+        window.onclick = (e) => { if(e.target == modal) closeModal(); }
+    </script>
+</body>
+</html>
