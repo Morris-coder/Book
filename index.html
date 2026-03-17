@@ -160,6 +160,7 @@
         }
 
         function updateView() {
+            if (!pageImg) return;
             pageImg.style.opacity = '0';
             loader.style.display = 'flex';
             
@@ -177,7 +178,6 @@
 
         function handleSuccess() {
             closeModal();
-            // This filename must match exactly what you upload to GitHub
             const pdfUrl = 'Luna_Milo_Kindness_Rainbow.pdf';
             const link = document.createElement('a');
             link.href = pdfUrl;
@@ -185,30 +185,39 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            alert("Payment successful! Your high-resolution PDF download is starting.");
+            // No alert() as per instructions
         }
 
-        // 4. Data Visualization
-        window.onload = () => {
+        // 4. Initialization with Error Handling for Chart.js
+        function initApp() {
             updateView();
-            const ctx = document.getElementById('themeChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Empathy', 'Sharing', 'Nature', 'Friendship'],
-                    datasets: [{
-                        data: [40, 25, 20, 15],
-                        backgroundColor: ['#ff6b6b', '#feca57', '#1dd1a1', '#48dbfb'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { font: { weight: 'bold' }, padding: 20 } } }
-                }
-            });
-        };
+            
+            // Check if Chart is available
+            if (typeof Chart !== 'undefined') {
+                const ctx = document.getElementById('themeChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Empathy', 'Sharing', 'Nature', 'Friendship'],
+                        datasets: [{
+                            data: [40, 25, 20, 15],
+                            backgroundColor: ['#ff6b6b', '#feca57', '#1dd1a1', '#48dbfb'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { font: { weight: 'bold' }, padding: 20 } } }
+                    }
+                });
+            } else {
+                console.error("Chart.js failed to load.");
+            }
+        }
+
+        // Wait for DOM and for external scripts
+        window.addEventListener('load', initApp);
 
         // Close modal on outside click
         window.onclick = (e) => { if(e.target == modal) closeModal(); }
